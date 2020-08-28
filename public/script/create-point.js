@@ -1,98 +1,82 @@
-
-
 function populateUFs() {
-    const ufselect = document.querySelector("select[name=uf]")
+  const ufselect = document.querySelector('select[name=uf]');
 
-    fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
-    .then( (res) => {return  res.json() })
-    .then( states =>{
-
-        for( const state of states ) {
-            ufselect.innerHTML += `<option value="${state.id}">${state.nome}</option>`
-        }
-        
-    } )
+  fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+    .then((res) => {
+      return res.json();
+    })
+    .then((states) => {
+      for (const state of states) {
+        ufselect.innerHTML += `<option value="${state.id}">${state.nome}</option>`;
+      }
+    });
 }
 
-populateUFs()
+populateUFs();
 
 function getCities(event) {
-    const citySelect = document.querySelector("select[name=city]")
-    const stateInput = document.querySelector("input[name=state]")
+  const citySelect = document.querySelector('select[name=city]');
+  const stateInput = document.querySelector('input[name=state]');
 
-    const ufValue = event.target.value
+  const ufValue = event.target.value;
 
-    const indexsOfSelectedstate = event.target.selectedIndex
-    stateInput.value = event.target.options[indexsOfSelectedstate].text
+  const indexsOfSelectedstate = event.target.selectedIndex;
+  stateInput.value = event.target.options[indexsOfSelectedstate].text;
 
-    const url = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufValue}/municipios`
+  const url = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufValue}/municipios`;
 
-    citySelect.innerHTML = "<option value>Selecione a Cidade</option>"
-    citySelect.disabled = true
+  citySelect.innerHTML =
+    '<option value="Selecione a Cidade">Selecione a Cidade</option>';
+  citySelect.disabled = true;
 
-    fetch(url)
-    .then( res => res.json() )
-    .then( cities => {
-        for( const city of cities ) {
-            citySelect.innerHTML += `<option value="${city.nome}">${city.nome}</option>`
+  fetch(url)
+    .then((res) => res.json())
+    .then((cities) => {
+      for (const city of cities) {
+        citySelect.innerHTML += `<option value="${city.nome}">${city.nome}</option>`;
+      }
 
-        }
-
-        citySelect.disabled = false
-    } )
+      citySelect.disabled = false;
+    });
 }
 
+document.querySelector('select[name=uf]').addEventListener('change', getCities);
 
-
-
-
-
-document
-    .querySelector("select[name=uf]")
-    .addEventListener("change", getCities)
-
-const itensToCollect = document.querySelectorAll(".items-grid li")
-for (const item of itensToCollect) {
-    item.addEventListener("click", handleSelectedItem)
-
+const ItemsToCollect = document.querySelectorAll('.items-grid li');
+for (const item of ItemsToCollect) {
+  item.addEventListener('click', handleSelectedItem);
 }
 
-const colectedItens = document.querySelector("input[name=items]")
+const colectedItems = document.querySelector('input[name=items]');
 
-let selectedItems = [] 
+let selectedItems = [];
 
 function handleSelectedItem(event) {
-    
-    const itemLi = event.target
+  const itemLi = event.target;
 
-    itemLi.classList.toggle("selected")
-    
-    const itemId = itemLi.dataset.id
+  itemLi.classList.toggle('selected');
 
-    console.log(`ITEM-ID: `, itemId)
+  const itemId = itemLi.dataset.id;
 
-    const alreadySelected =ms.findIndex( item => {
+  console.log(`ITEM-ID: `, itemId);
 
-        const itemFound =  item == itemId
-        return itemFound
-    } )
+  const alreadySelected = selectedItems.findIndex((item) => {
+    const itemFound = item == itemId;
+    return itemFound;
+  });
 
-    if(alreadySelected >= 0) {
+  if (alreadySelected >= 0) {
+    const filteredItems = ms.filter((item) => {
+      const itemIsDiferent = item != itemId;
+      return itemIsDiferent;
+    });
 
-        const filteredItens =ms.filter(item => {
-            const itemIsDiferent = item != itemId
-            return itemIsDiferent
-        })
+    selectedItems = filteredItems;
+  } else {
+    selectedItems.push(itemId);
+  }
 
-    ms = filteredItens
-    } else {
+  console.log(`selectedItems: `, selectedItems);
 
-    ms.push(itemId)
-
-    }
-
-    console.log(`selectedItems: `, selectedItems)
-
-    colectedItens.value = selectedItems
-    
+  colectedItems.value = selectedItems;
 }
